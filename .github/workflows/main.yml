@@ -40,14 +40,17 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
-          
-      - name: Build on GCP using Cloud Build
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+                  
+      - name: Replace environment variables on appsettings.json
         run: |-
           mv appsettings.json appsettings.json.template
           envsubst < ./appsettings.json.template > appsettings.json
           rm appsettings.json.template -f
-          gcloud builds submit --tag gcr.io/$GCP_PROJECT_ID/exemplo-dotnet
+        working-directory: ./ExemploDeploy
+
+      - name: Build on GCP using Cloud Build
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: gcloud builds submit --tag gcr.io/$GCP_PROJECT_ID/exemplo-dotnet
 
       - name: Deploy on GCR
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
