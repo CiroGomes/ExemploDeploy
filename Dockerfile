@@ -15,6 +15,7 @@ RUN dotnet restore "ExemploDeploy/ExemploDeploy.csproj"
 COPY . .
 WORKDIR "/src/ExemploDeploy"
 RUN dotnet build "ExemploDeploy.csproj" -c Release -o /app/build
+RUN dotnet test --no-build --verbosity normal
 
 FROM build AS publish
 RUN dotnet publish "ExemploDeploy.csproj" -c Release -o /app/publish
